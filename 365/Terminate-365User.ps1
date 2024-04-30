@@ -48,8 +48,40 @@ function Reset-Password {
     }
 }
 
-Block-SignIn -UPN $upn
-Reset-Password -UPN $upn
+function Get-Groups {
+    param (
+        [string]$UPN
+    )
+
+    $user = Get-MsolUser -UserPrincipalName $UPN
+    $groups = Get-MsolGroup
+
+    $memberOf = New-Object System.Collections.ArrayList
+
+    $groups | ForEach-Object {
+        $groupMembers = Get-MsolGroupMember -GroupObjectId $_.ObjectID | Where-Object {$_.ObjectID -eq $user.ObjectID}
+
+        if($groupMembers){
+            #$groupDetails = $_.DisplayName, $_.EmailAddress
+            #$memberOf[$_.ObjectID.toString()] = $groupDetails
+            
+            $groupObject = New-Object PSObject -Property @{
+                'ObjectID' = $_.ObjectID
+                'DisplayName' = $_.DisplayName
+                'EmailAddress' = $_.EmailAddress
+            }
+
+            $memberOf.Add($_)
+        }
+    }
+
+    return $memberOf
+}
+
+#Block-SignIn -UPN $upn
+#Reset-Password -UPN $upn
+$test = Get-Groups -UPN $upn
+Write-Host $test
 
 # Prevents powershell window from closing automatically
 Read-Host "Press Enter to close this window"
