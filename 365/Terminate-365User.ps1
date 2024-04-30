@@ -60,7 +60,7 @@ function Get-Groups {
 
     # for each group in groups, get members of group, then filter for user by user Object ID
     $groups | ForEach-Object {
-        $groupMembers = Get-MsolGroupMember -GroupObjectId $_.ObjectID | Where-Object {$_.ObjectID -eq $user.ObjectID}
+        $groupMembers = Get-MsolGroupMember -GroupObjectId $_.ObjectId | Where-Object {$_.ObjectId -eq $user.ObjectId}
 
         # if user is part of group, append group object to $memberOf
         if($groupMembers){
@@ -71,10 +71,23 @@ function Get-Groups {
     return $memberOf
 }
 
+function Remove-Groups {
+    param (
+        [string]$UPN,
+        [object]$Groups
+    )
+
+    $user = Get-MsolUser -UserPrincipalName $UPN
+
+    foreach ($group in $Groups) {
+        Remove-MsolGroupMember -GroupObjectId $group.ObjectId -GroupMemberType User -GroupMemberObjectId $user.ObjectId
+    }
+}
+
 #Block-SignIn -UPN $upn
 #Reset-Password -UPN $upn
 $test = Get-Groups -UPN $upn
-Write-Host $test
+Remove-Groups -UPN $upn -Groups $test
 
 # Prevents powershell window from closing automatically
 Read-Host "Press Enter to close this window"
