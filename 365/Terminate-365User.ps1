@@ -30,10 +30,26 @@ function Reset-Password {
         [string]$UPN
     )
 
+    $userDataBefore = Get-MsolUser -UserPrincipalName $UPN
 
+    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+'
+    $password = -join ((Get-Random -Count 16 -InputObject $chars.ToCharArray()))
+    
+    Set-MsolUserPassword -UserPrincipalName $UPN -ForceChangePassword $False -NewPassword $password
+
+    $userDataAfer = Get-MsolUser -UserPrincipalName $UPN
+
+    # Checking to make sure password was updated
+    if($userDataAfer.LastPasswordChangeTimestamp -gt $userDataBefore.LastPasswordChangeTimestamp) {
+        Write-Host "Password for $UPN was reset"
+    }
+    else {
+        Write-Host "Unable to reset password for $UPN"
+    }
 }
 
 Block-SignIn -UPN $upn
+Reset-Password -UPN $upn
 
 # Prevents powershell window from closing automatically
 Read-Host "Press Enter to close this window"
