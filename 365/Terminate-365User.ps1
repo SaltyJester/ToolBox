@@ -58,20 +58,13 @@ function Get-Groups {
 
     $memberOf = New-Object System.Collections.ArrayList
 
+    # for each group in groups, get members of group, then filter for user by user Object ID
     $groups | ForEach-Object {
         $groupMembers = Get-MsolGroupMember -GroupObjectId $_.ObjectID | Where-Object {$_.ObjectID -eq $user.ObjectID}
 
+        # if user is part of group, append group object to $memberOf
         if($groupMembers){
-            #$groupDetails = $_.DisplayName, $_.EmailAddress
-            #$memberOf[$_.ObjectID.toString()] = $groupDetails
-            
-            $groupObject = New-Object PSObject -Property @{
-                'ObjectID' = $_.ObjectID
-                'DisplayName' = $_.DisplayName
-                'EmailAddress' = $_.EmailAddress
-            }
-
-            $memberOf.Add($_)
+            $memberOf += ($_)
         }
     }
 
