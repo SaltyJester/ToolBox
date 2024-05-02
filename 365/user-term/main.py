@@ -12,10 +12,12 @@ async def main():
     graph = Graph()
     user = await graph.get_user(upn)
     print(user)
+    # for each in user.value:
+    #     print(each.user_principal_name)
 
 # this is needed to prevent runtime error below, not sure why
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 # this causes "RuntimeError: Event loop is closed", not sure why
 asyncio.run(main()) 
 
-asyncio.get_event_loop().run_until_complete(main())
+# asyncio.get_event_loop().run_until_complete(main())
