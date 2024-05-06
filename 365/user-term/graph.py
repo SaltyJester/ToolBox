@@ -32,10 +32,23 @@ class Graph:
         # user.value == 1, since we're only looking for one user at a time
         return user.value[0]
 
-    async def block_signin(self, user: User):
+    def print_user_attr(self, user):
+        for attr, value in vars(user).items():
+            if(value != None):
+                print(attr, ':', value)
+
+    async def block_signin(self, user):
         request_body = User(
             account_enabled = False
         )
-
         result = await self.client.users.by_user_id(user.id).patch(request_body)
-        return result
+
+        # Checking to make sure that user's sign in was disabled
+        user = await self.get_user(user.user_principal_name)
+        if user.account_enabled:
+            # at some point, we may want to throw an error here instead
+            return False
+        return True
+
+    async def reset_password(self, user):
+        # 
