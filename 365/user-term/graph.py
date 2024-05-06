@@ -4,6 +4,10 @@ from azure.identity import ClientSecretCredential
 from msgraph import GraphServiceClient
 from msgraph.generated.users.users_request_builder import UsersRequestBuilder
 from msgraph.generated.models.user import User
+import string
+import secrets
+
+load_dotenv()
 
 class Graph:
     def __init__(self):
@@ -51,4 +55,19 @@ class Graph:
         return True
 
     async def reset_password(self, user):
-        # 
+        characters = string.ascii_letters + string.digits + string.punctuation
+        password = ''.join(secrets.choice(characters) for _ in range(16))
+
+        request_body = User(
+            # missing syntax or correct object to pass in new password to passwordProfile
+            password_profile = {
+                "forceChangePasswordNextSignIn": False
+            }
+        )
+        
+        try:
+            result = await self.client.users.by_user_id(user.id).patch(request_body)
+        except Exception as e:
+            print(e)
+
+        return True
