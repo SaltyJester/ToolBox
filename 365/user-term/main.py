@@ -11,9 +11,10 @@ async def main():
     # upn = input('Please enter UPN of user to be terminated: ')
     graph = Graph()
     user = await graph.get_user('ajones@organharvest.biz')
-    print(user)
-    result = await graph.block_signin(user)
-    print(result)
+    print(len(user.value))
+    
+    # result = await graph.block_signin(user)
+    # print(result)
 
 # this is needed to prevent runtime error below, not sure why
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

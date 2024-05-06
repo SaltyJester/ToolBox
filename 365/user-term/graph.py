@@ -19,8 +19,7 @@ class Graph:
 
     async def get_user(self, upn):
         query_params = UsersRequestBuilder.UsersRequestBuilderGetQueryParameters(
-            # select isn't working as I expected, need to dig into it more
-            # select = ["displayName"],
+            select = ["id", "userPrincipalName", "displayName", "accountEnabled"],
             filter = f"userPrincipalName eq '{upn}'"
         )
 
@@ -29,7 +28,8 @@ class Graph:
         )
 
         user = await self.client.users.get(request_configuration = request_configuration)
-        # user = await self.client.users.get()
+        
+        # user.value == 1, since we're only looking for one user at a time
         return user.value[0]
 
     async def block_signin(self, user: User):
