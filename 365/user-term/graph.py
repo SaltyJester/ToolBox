@@ -4,6 +4,7 @@ from azure.identity import ClientSecretCredential
 from msgraph import GraphServiceClient
 from msgraph.generated.users.users_request_builder import UsersRequestBuilder
 from msgraph.generated.models.user import User
+from msgraph.generated.models.password_profile import PasswordProfile
 import string
 import secrets
 
@@ -59,10 +60,10 @@ class Graph:
         password = ''.join(secrets.choice(characters) for _ in range(16))
 
         request_body = User(
-            # missing syntax or correct object to pass in new password to passwordProfile
-            password_profile = {
-                "forceChangePasswordNextSignIn": False
-            }
+            password_profile = PasswordProfile(
+                force_change_password_next_sign_in = False,
+		        password = password,
+            )
         )
         
         try:
