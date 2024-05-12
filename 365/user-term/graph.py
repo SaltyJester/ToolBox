@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from azure.identity import ClientSecretCredential
 from msgraph import GraphServiceClient
+from azure.identity import DeviceCodeCredential
 from msgraph.generated.users.users_request_builder import UsersRequestBuilder
 from msgraph.generated.models.user import User
 from msgraph.generated.models.password_profile import PasswordProfile
@@ -12,15 +13,18 @@ load_dotenv()
 
 class Graph:
     def __init__(self):
-        credential = ClientSecretCredential(
-            tenant_id=os.getenv('TENANT_ID'),
-            client_id=os.getenv('CLIENT_ID'),
-            client_secret=os.getenv('CLIENT_SECRET')
-        )
+        self.device_code_credential = DeviceCodeCredential(os.getenv('CLIENT_ID'), tenant_id = os.getenv('TENANT_ID'))
 
-        scopes = ['https://graph.microsoft.com/.default']
+        # credential = ClientSecretCredential(
+        #     tenant_id=os.getenv('TENANT_ID'),
+        #     client_id=os.getenv('CLIENT_ID'),
+        #     client_secret=os.getenv('CLIENT_SECRET')
+        # )
 
-        self.client = GraphServiceClient(credentials=credential, scopes=scopes)
+        # scopes = ['https://graph.microsoft.com/.default']
+        scopes = ['Directory.AccessAsUser.All']
+
+        self.client = GraphServiceClient(credentials=self.device_code_credential, scopes=scopes)
 
     async def get_user(self, upn):
         query_params = UsersRequestBuilder.UsersRequestBuilderGetQueryParameters(
