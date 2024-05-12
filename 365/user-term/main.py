@@ -20,7 +20,7 @@ async def main():
     groups = await graph.get_user_groups(user)
     print(len(groups.value))
     for each in groups.value:
-        print(each.display_name)
+        print(each.display_name, each.id)
         print()
 
 # this is needed to prevent runtime error below, not sure why
