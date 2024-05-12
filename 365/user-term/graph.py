@@ -28,7 +28,7 @@ class Graph:
 
     async def get_user(self, upn):
         query_params = UsersRequestBuilder.UsersRequestBuilderGetQueryParameters(
-            select = ["id", "userPrincipalName", "displayName", "accountEnabled"],
+            select = ["id", "userPrincipalName", "displayName", "accountEnabled", "lastPasswordChangeDateTime"],
             filter = f"userPrincipalName eq '{upn}'"
         )
 
@@ -40,6 +40,9 @@ class Graph:
         
         # user.value == 1, since we're only looking for one user at a time
         return user.value[0]
+
+    async def get_user_groups(self, upn):
+        return None
 
     def print_user_attr(self, user):
         for attr, value in vars(user).items():
@@ -74,5 +77,10 @@ class Graph:
             result = await self.client.users.by_user_id(user.id).patch(request_body)
         except Exception as e:
             print(e)
+
+        # verifying to see if password was changed
+        updated_user = await self.get_user(user.user_principal_name)
+        if(not (user.last_password_change_date_time < updated_user.last_password_change_date_time)):
+            return False
 
         return True
