@@ -41,8 +41,8 @@ class Graph:
         # user.value == 1, since we're only looking for one user at a time
         return user.value[0]
 
-    async def get_user_groups(self, upn):
-        return None
+    async def get_user_groups(self, user):
+        return await self.client.users.by_user_id(user.id).member_of.get()
 
     def print_user_attr(self, user):
         for attr, value in vars(user).items():

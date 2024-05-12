@@ -10,11 +10,18 @@ async def main():
     graph.print_user_attr(user)
     
     # Block Sign in
-    result = await graph.block_signin(user)
-    print(result)
+    # result = await graph.block_signin(user)
+    # print(result)
 
     # Reset Password
-    print(await graph.reset_password(user))
+    # print(await graph.reset_password(user))
+
+    # Remove user from groups
+    groups = await graph.get_user_groups(user)
+    print(len(groups.value))
+    for each in groups.value:
+        print(each.display_name)
+        print()
 
 # this is needed to prevent runtime error below, not sure why
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
