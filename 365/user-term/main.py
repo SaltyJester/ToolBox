@@ -18,10 +18,12 @@ async def main():
 
     # Remove user from groups
     groups = await graph.get_user_groups(user)
-    print(len(groups.value))
-    for each in groups.value:
+    print(len(groups))
+    for each in groups:
         print(each.display_name, each.id)
         print()
+    
+    await graph.remove_group_membership(user, groups)
 
 # this is needed to prevent runtime error below, not sure why
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

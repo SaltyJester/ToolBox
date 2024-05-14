@@ -42,7 +42,8 @@ class Graph:
         return user.value[0]
 
     async def get_user_groups(self, user):
-        return await self.client.users.by_user_id(user.id).member_of.get()
+        groups = await self.client.users.by_user_id(user.id).member_of.get()
+        return groups.value
 
     def print_user_attr(self, user):
         for attr, value in vars(user).items():
@@ -83,4 +84,9 @@ class Graph:
         if(not (user.last_password_change_date_time < updated_user.last_password_change_date_time)):
             return False
 
+        return True
+
+    async def remove_group_membership(self, user, groups):
+        for group in groups:
+            await self.client.groups.by_group_id(group.id).members.by_directory_object_id(user.id).ref.delete()
         return True
