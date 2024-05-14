@@ -7,7 +7,7 @@ async def main():
     # upn = input('Please enter UPN of user to be terminated: ')
     graph = Graph()
     user = await graph.get_user('ajones@organharvest.biz')
-    graph.print_user_attr(user)
+    # graph.print_user_attr(user)
     
     # Block Sign in
     # result = await graph.block_signin(user)
@@ -18,13 +18,7 @@ async def main():
 
     # Remove user from groups
     groups = await graph.get_user_groups(user)
-    print(len(groups))
-    for each in groups:
-        for attr, value in vars(each).items():
-            if(value != None):
-                print(attr, ':', value)
-        # print(each)
-        print()
+    graph.print_groups_attr(groups)
     
     # await graph.remove_group_membership(user, groups)
 

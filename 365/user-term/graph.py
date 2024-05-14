@@ -42,6 +42,11 @@ class Graph:
         # user.value == 1, since we're only looking for one user at a time
         return user.value[0]
 
+    def print_user_attr(self, user):
+        for attr, value in vars(user).items():
+            if(value != None):
+                print(attr, ':', value)
+
     async def get_user_groups(self, user):
         query_params = GroupsRequestBuilder.GroupsRequestBuilderGetQueryParameters(
             select = ["id","displayName","groupTypes","classification","mailEnabled","membershipRule","mail"]
@@ -55,10 +60,12 @@ class Graph:
 
         return groups.value
 
-    def print_user_attr(self, user):
-        for attr, value in vars(user).items():
-            if(value != None):
-                print(attr, ':', value)
+    def print_groups_attr(self, groups):
+        for each in groups:
+            for attr, value in vars(each).items():
+                if(value != None):
+                    print(attr, ':', value)
+            print()
 
     async def block_signin(self, user):
         request_body = User(
@@ -98,5 +105,7 @@ class Graph:
 
     async def remove_group_membership(self, user, groups):
         for group in groups:
+            # need to filter out mail enabled security groups/distros
+            # if mail is enabled and group_types contain 'Unified', filter it
             await self.client.groups.by_group_id(group.id).members.by_directory_object_id(user.id).ref.delete()
         return True
