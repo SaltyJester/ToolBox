@@ -4,6 +4,7 @@ from azure.identity import ClientSecretCredential
 from msgraph import GraphServiceClient
 from azure.identity import DeviceCodeCredential
 from msgraph.generated.users.users_request_builder import UsersRequestBuilder
+from msgraph.generated.groups.groups_request_builder import GroupsRequestBuilder
 from msgraph.generated.models.user import User
 from msgraph.generated.models.password_profile import PasswordProfile
 import string
@@ -42,7 +43,16 @@ class Graph:
         return user.value[0]
 
     async def get_user_groups(self, user):
-        groups = await self.client.users.by_user_id(user.id).member_of.get()
+        query_params = GroupsRequestBuilder.GroupsRequestBuilderGetQueryParameters(
+            select = ["id","displayName","groupTypes","classification","mailEnabled","membershipRule","mail"]
+        )
+
+        request_configuration = GroupsRequestBuilder.GroupsRequestBuilderGetRequestConfiguration(
+            query_parameters = query_params,
+        )
+        # groups = await self.client.users.by_user_id(user.id).member_of.get()
+        groups = await self.client.users.by_user_id(user.id).member_of.get(request_configuration = request_configuration)
+
         return groups.value
 
     def print_user_attr(self, user):
