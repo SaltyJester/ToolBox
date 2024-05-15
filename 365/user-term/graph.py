@@ -107,5 +107,7 @@ class Graph:
         for group in groups:
             # need to filter out mail enabled security groups/distros
             # if mail is enabled and group_types contain 'Unified', filter it
+            # need to also check if group is dynamic
+            
             await self.client.groups.by_group_id(group.id).members.by_directory_object_id(user.id).ref.delete()
         return True
