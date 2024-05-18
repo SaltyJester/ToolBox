@@ -109,5 +109,10 @@ class Graph:
             # if mail is enabled and group_types contain 'Unified', filter it
             # need to also check if group is dynamic
             
+            # if group is a distro or mail enabled security group
+            if (group.mail_enabled and len(group.group_types) == 0):
+                print("NOT GRAPH COMPATIBLE")
+                print(group)
+
             await self.client.groups.by_group_id(group.id).members.by_directory_object_id(user.id).ref.delete()
         return True
