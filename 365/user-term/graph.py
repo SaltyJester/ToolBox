@@ -123,22 +123,23 @@ class Graph:
                 continue # remove this when done
 
         # process non Graph API compatible groups via ExchangeOnlineModule in PowerShell
-        #this should be in an if statement
-        arg = json.dumps(exchange_groups)
-        print(arg)
-        powershell_script_path = "exchange-module.ps1"
-        command = ["powershell", "-File", powershell_script_path, arg]
-        result = subprocess.run(command, capture_output=True, text=True)
+        if (exchange_groups.value){
+            arg = json.dumps(exchange_groups)
+            print(arg)
+            powershell_script_path = "exchange-module.ps1"
+            command = ["powershell", "-File", powershell_script_path, arg]
+            result = subprocess.run(command, capture_output=True, text=True)
 
-        print("Output:")
-        print(result.stdout)
+            print("Output:")
+            print(result.stdout)
 
-        print("Error:")
-        print(result.stderr)
+            print("Error:")
+            print(result.stderr)
 
-        if result.returncode == 0:
-            print("Script executed successfully!")
-        else:
-            print(f"Script failed with return code {result.returncode}")
-
+            if result.returncode == 0:
+                print("Script executed successfully!")
+            else:
+                print(f"Script failed with return code {result.returncode}")
+            }
+        
         return True
