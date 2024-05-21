@@ -1,4 +1,7 @@
 import os
+import string
+import secrets
+import json
 from dotenv import load_dotenv
 from azure.identity import ClientSecretCredential
 from msgraph import GraphServiceClient
@@ -7,8 +10,6 @@ from msgraph.generated.users.users_request_builder import UsersRequestBuilder
 from msgraph.generated.groups.groups_request_builder import GroupsRequestBuilder
 from msgraph.generated.models.user import User
 from msgraph.generated.models.password_profile import PasswordProfile
-import string
-import secrets
 
 load_dotenv()
 
@@ -104,15 +105,25 @@ class Graph:
         return True
 
     async def remove_group_membership(self, user, groups):
-        for group in groups:
-            # need to filter out mail enabled security groups/distros
-            # if mail is enabled and group_types contain 'Unified', filter it
-            # need to also check if group is dynamic
-            
-            # if group is a distro or mail enabled security group
-            if (group.mail_enabled and len(group.group_types) == 0):
-                print("NOT GRAPH COMPATIBLE")
-                print(group)
+        exchange_groups = {
+            "groups": []
+        }
 
-            await self.client.groups.by_group_id(group.id).members.by_directory_object_id(user.id).ref.delete()
+        for group in groups:
+            if (group.mail_enabled and len(group.group_types) == 0):
+                # group is a distro or mail enabled security group
+                exchange_groups["groups"].append({"groupId": group.id, "userId": user.id})
+            elif (len(group.group_types) == 2):
+                # group is dynamic, shouldn't need to manually remove
+                continue
+            else:
+                # group is a Graph API compatible
+                # await self.client.groups.by_group_id(group.id).members.by_directory_object_id(user.id).ref.delete()
+                continue # remove this when done
+
+        # process non Graph API compatible groups via ExchangeOnlineModule in PowerShell
+        json_string = json.dumps(exchange_groups)
+        
+        print(json_string)
+
         return True

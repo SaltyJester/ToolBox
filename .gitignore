@@ -1,4 +1,5 @@
 __pycache__
+venv
 
 # dotenv environment variables file
 .env
