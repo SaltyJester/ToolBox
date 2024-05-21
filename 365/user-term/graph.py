@@ -123,7 +123,7 @@ class Graph:
                 continue # remove this when done
 
         # process non Graph API compatible groups via ExchangeOnlineModule in PowerShell
-        if (exchange_groups.value){
+        if (exchange_groups["value"]):
             arg = json.dumps(exchange_groups)
             print(arg)
             powershell_script_path = "exchange-module.ps1"
@@ -140,6 +140,5 @@ class Graph:
                 print("Script executed successfully!")
             else:
                 print(f"Script failed with return code {result.returncode}")
-            }
         
         return True

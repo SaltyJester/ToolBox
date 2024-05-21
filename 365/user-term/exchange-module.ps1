@@ -13,5 +13,5 @@ Connect-ExchangeOnline
 $groups = ConvertFrom-Json -InputObject $args[0]
 
 foreach ($group in $groups.value){
-    Remove-DistributionGroupMember -Identity group.groupId -Member group.userId -Confirm: $False
+    Remove-DistributionGroupMember -Identity $group.groupId -Member $group.userId -Confirm: $False
 }
