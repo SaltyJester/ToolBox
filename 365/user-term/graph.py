@@ -2,6 +2,7 @@ import os
 import string
 import secrets
 import json
+import subprocess
 from dotenv import load_dotenv
 from azure.identity import ClientSecretCredential
 from msgraph import GraphServiceClient
@@ -106,13 +107,13 @@ class Graph:
 
     async def remove_group_membership(self, user, groups):
         exchange_groups = {
-            "groups": []
+            "value": []
         }
 
         for group in groups:
             if (group.mail_enabled and len(group.group_types) == 0):
                 # group is a distro or mail enabled security group
-                exchange_groups["groups"].append({"groupId": group.id, "userId": user.id})
+                exchange_groups["value"].append({"groupId": group.id, "userId": user.id})
             elif (len(group.group_types) == 2):
                 # group is dynamic, shouldn't need to manually remove
                 continue
@@ -122,8 +123,22 @@ class Graph:
                 continue # remove this when done
 
         # process non Graph API compatible groups via ExchangeOnlineModule in PowerShell
-        json_string = json.dumps(exchange_groups)
-        
-        print(json_string)
+        #this should be in an if statement
+        arg = json.dumps(exchange_groups)
+        print(arg)
+        powershell_script_path = "exchange-module.ps1"
+        command = ["powershell", "-File", powershell_script_path, arg]
+        result = subprocess.run(command, capture_output=True, text=True)
+
+        print("Output:")
+        print(result.stdout)
+
+        print("Error:")
+        print(result.stderr)
+
+        if result.returncode == 0:
+            print("Script executed successfully!")
+        else:
+            print(f"Script failed with return code {result.returncode}")
 
         return True
