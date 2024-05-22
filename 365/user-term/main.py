@@ -3,6 +3,19 @@ from graph import Graph
 
 # print(os.getenv('CLIENT_ID'))
 
+def print_user_attr(user):
+    for attr, value in vars(user).items():
+        if(value != None):
+            print(attr, ':', value)
+
+def print_groups_attr(groups):
+    for each in groups:
+        for attr, value in vars(each).items():
+            if(value != None):
+                print(attr, ':', value)
+        print()
+
+
 async def main():
     # upn = input('Please enter UPN of user to be terminated: ')
     graph = Graph()

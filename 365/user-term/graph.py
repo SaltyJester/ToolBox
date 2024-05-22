@@ -44,11 +44,6 @@ class Graph:
         # user.value == 1, since we're only looking for one user at a time
         return user.value[0]
 
-    def print_user_attr(self, user):
-        for attr, value in vars(user).items():
-            if(value != None):
-                print(attr, ':', value)
-
     async def get_user_groups(self, user):
         query_params = GroupsRequestBuilder.GroupsRequestBuilderGetQueryParameters(
             select = ["id","displayName","groupTypes","classification","mailEnabled","membershipRule","mail"]
@@ -61,13 +56,6 @@ class Graph:
         groups = await self.client.users.by_user_id(user.id).member_of.get(request_configuration = request_configuration)
 
         return groups.value
-
-    def print_groups_attr(self, groups):
-        for each in groups:
-            for attr, value in vars(each).items():
-                if(value != None):
-                    print(attr, ':', value)
-            print()
 
     async def block_signin(self, user):
         request_body = User(
@@ -119,8 +107,8 @@ class Graph:
                 continue
             else:
                 # group is a Graph API compatible
-                # await self.client.groups.by_group_id(group.id).members.by_directory_object_id(user.id).ref.delete()
-                continue # remove this when done
+                await self.client.groups.by_group_id(group.id).members.by_directory_object_id(user.id).ref.delete()
+                # continue # remove this when done
 
         # process non Graph API compatible groups via ExchangeOnlineModule in PowerShell
         if (exchange_groups["value"]):
